@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virginia Wage Floor</title>
+<meta name="description" content="Tracks Virginia's state minimum wage and forecasts the inflation-indexed rate from 2029 through 2070.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single statute-poster column; summary up top, then the law, the 2029 mechanism, the forecast tool, and the full table. */
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --ink: #16213d;
+  --muted: #56607a;
+  --rule: #d9dee8;
+  --navy: #1d3a7a;        /* Commonwealth blue: enacted law */
+  --amber: #b4610e;       /* forecast */
+  --band: rgba(180, 97, 14, 0.13);
+  --navy-soft: rgba(29, 58, 122, 0.08);
+  --amber-soft: rgba(180, 97, 14, 0.10);
+  --grid: #e6e9f0;
+  --font-display: "Zilla Slab", "Rockwell", "Roboto Slab", Georgia, serif;
+  --font-body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1424; --surface: #161d31; --ink: #e6eaf4; --muted: #9aa4bd; --rule: #2a3350;
+    --navy: #8fb0f5; --amber: #f0a75a; --band: rgba(240, 167, 90, 0.16);
+    --navy-soft: rgba(143, 176, 245, 0.10); --amber-soft: rgba(240, 167, 90, 0.12); --grid: #222a43;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1424; --surface: #161d31; --ink: #e6eaf4; --muted: #9aa4bd; --rule: #2a3350;
+  --navy: #8fb0f5; --amber: #f0a75a; --band: rgba(240, 167, 90, 0.16);
+  --navy-soft: rgba(143, 176, 245, 0.10); --amber-soft: rgba(240, 167, 90, 0.12); --grid: #222a43;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: grid; gap: 56px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.15rem; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--navy); }
+.eyebrow { font-family: var(--font-data); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.num { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+section { display: grid; gap: 20px; min-width: 0; }
+.lede { color: var(--muted); }
+:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+/* Header */
+header { display: grid; gap: 24px; }
+.mast { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 24px; border-bottom: 3px double var(--ink); padding-bottom: 12px; }
+.mast h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); }
+.cite { font-family: var(--font-data); font-size: 0.8rem; color: var(--muted); }
+.now { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.stat { background: var(--surface); border: 1px solid var(--rule); padding: 18px 20px; display: grid; gap: 4px; align-content: start; }
+.stat .big { font-family: var(--font-display); font-weight: 700; font-size: 2.6rem; line-height: 1; }
+.stat.law .big { color: var(--navy); }
+.stat.fc .big { color: var(--amber); }
+.stat .sub { font-size: 0.9rem; color: var(--muted); }
+
+/* Schedule strip */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); border: 1px solid var(--rule); background: var(--surface); }
+.step { padding: 14px 14px 12px; border-right: 1px solid var(--rule); display: grid; gap: 2px; position: relative; }
+.step:last-child { border-right: 0; }
+.step .d { font-family: var(--font-data); font-size: 0.75rem; color: var(--muted); }
+.step .w { font-family: var(--font-display); font-weight: 700; font-size: 1.45rem; }
+.step .n { font-size: 0.78rem; color: var(--muted); line-height: 1.35; }
+.step.current { background: var(--navy-soft); box-shadow: inset 0 3px 0 var(--navy); }
+.step.future .w { color: var(--navy); }
+.step.fc .w { color: var(--amber); }
+.pill { display: inline-block; font-family: var(--font-data); font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 1px 7px; border-radius: 99px; width: fit-content; }
+.pill.law { background: var(--navy-soft); color: var(--navy); }
+.pill.fc { background: var(--amber-soft); color: var(--amber); }
+.pill.now { background: var(--navy); color: var(--surface); }
+
+/* Statute */
+.statute { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; }
+@media (max-width: 760px) { .statute { grid-template-columns: 1fr; } }
+blockquote { margin: 0; background: var(--surface); border: 1px solid var(--rule); padding: 18px 20px; font-size: 0.95rem; display: grid; gap: 10px; }
+blockquote .sec { font-family: var(--font-data); font-size: 0.78rem; color: var(--muted); }
+.formula { font-family: var(--font-data); background: var(--surface); border: 1px dashed var(--rule); padding: 14px 16px; font-size: 0.9rem; overflow-x: auto; white-space: nowrap; }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.timeline li { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; padding: 12px 0; border-top: 1px solid var(--rule); }
+.timeline li:first-child { border-top: 0; padding-top: 0; }
+.timeline .when { font-family: var(--font-data); font-size: 0.82rem; color: var(--navy); font-weight: 500; }
+.timeline .what { font-size: 0.95rem; }
+.notes { display: grid; gap: 8px; padding-left: 1.1em; margin: 0; color: var(--muted); font-size: 0.93rem; }
+
+/* Forecast tool */
+.tool { background: var(--surface); border: 1px solid var(--rule); padding: 20px; display: grid; gap: 18px; min-width: 0; }
+.controls { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: end; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg button { font: inherit; font-size: 0.88rem; padding: 7px 14px; border: 0; background: transparent; color: var(--ink); cursor: pointer; border-right: 1px solid var(--rule); }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--amber); color: var(--surface); font-weight: 600; }
+.seg button:hover:not([aria-pressed="true"]) { background: var(--amber-soft); }
+.field { display: grid; gap: 4px; }
+.field label { font-size: 0.8rem; color: var(--muted); }
+.field .row { display: flex; align-items: center; gap: 10px; }
+.field input[type=range] { width: 160px; accent-color: var(--amber); }
+.field output { font-family: var(--font-data); font-size: 0.9rem; min-width: 3.6em; }
+.chart-box { position: relative; min-width: 0; }
+svg#chart { width: 100%; height: auto; display: block; overflow: visible; }
+svg text { font-family: var(--font-data); font-size: 11px; fill: var(--muted); }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); padding: 8px 10px; font-size: 0.8rem; border-radius: 4px; line-height: 1.4; white-space: nowrap; transform: translate(-50%, calc(-100% - 12px)); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.82rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 18px; height: 3px; display: inline-block; }
+.sw.law { background: var(--navy); }
+.sw.fc { background: var(--amber); }
+.sw.band { height: 10px; background: var(--band); }
+.milestones { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.ms { border-top: 2px solid var(--amber); padding-top: 8px; display: grid; gap: 2px; }
+.ms .k { font-size: 0.8rem; color: var(--muted); }
+.ms .v { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; }
+
+/* Table */
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); background: var(--surface); max-height: 640px; overflow-y: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; min-width: 640px; }
+th, td { padding: 8px 12px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+thead th { position: sticky; top: 0; background: var(--surface); font-weight: 600; font-size: 0.78rem; color: var(--muted); border-bottom: 1px solid var(--rule); z-index: 1; }
+tbody td { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+tbody td:nth-child(2) { font-family: var(--font-body); }
+tr.law td:nth-child(3) { color: var(--navy); font-weight: 500; }
+tr.fc td:nth-child(3) { color: var(--amber); font-weight: 500; }
+tr.decade td { border-bottom-color: var(--rule); }
+tr.thisyear { background: var(--navy-soft); }
+.sources { display: grid; gap: 6px; font-size: 0.9rem; padding-left: 1.1em; margin: 0; }
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 6px; }
+@media (max-width: 480px) {
+  .wrap { padding-inline: 16px; gap: 44px; }
+  .stat .big { font-size: 2.2rem; }
+  .timeline li { grid-template-columns: 1fr; gap: 2px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  #fcLine { transition: d 0.3s ease; }
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="mast">
+    <h1>Virginia Wage Floor</h1>
+    <span class="cite">Va. Code § 40.1-28.10 · as amended 2026 (HB 1 / SB 1)</span>
+  </div>
+  <div class="now">
+    <div class="stat law">
+      <span class="eyebrow">In effect today</span>
+      <span class="big num" id="nowWage">$12.77</span>
+      <span class="sub" id="nowSub">per hour since January 1, 2026</span>
+    </div>
+    <div class="stat law">
+      <span class="eyebrow">Next increase</span>
+      <span class="big num" id="nextWage">$13.75</span>
+      <span class="sub" id="nextSub">January 1, 2027</span>
+    </div>
+    <div class="stat fc">
+      <span class="eyebrow">First inflation-indexed rate (est.)</span>
+      <span class="big num" id="est2029">$15.39</span>
+      <span class="sub">January 1, 2029 · set by October 1, 2028</span>
+    </div>
+    <div class="stat fc">
+      <span class="eyebrow">Projected 2070 rate</span>
+      <span class="big num" id="est2070">—</span>
+      <span class="sub" id="est2070sub">base scenario</span>
+    </div>
+  </div>
+</header>
+
+<section aria-labelledby="sched">
+  <div style="display:grid;gap:6px">
+    <span class="eyebrow">Tracker</span>
+    <h2 id="sched">The rate, step by step</h2>
+  </div>
+  <div class="steps" id="steps"></div>
+  <p class="lede">Virginia law requires employers to pay the greater of the state rate or the federal minimum ($7.25 since 2009). The 2026 legislation, signed April 2026, fixed the 2027 and 2028 steps in statute and moved annual inflation indexing to start in 2029.</p>
+</section>
+
+<section aria-labelledby="how">
+  <div style="display:grid;gap:6px">
+    <span class="eyebrow">The 2029 mechanism</span>
+    <h2 id="how">How Virginia will set the 2029 wage</h2>
+  </div>
+  <div class="statute">
+    <div style="display:grid;gap:18px;min-width:0">
+      <blockquote>
+        <span class="sec">§ 40.1-28.10(F), paraphrased with key phrases quoted</span>
+        <span>“By October 1, 2028, and annually thereafter, the Commissioner shall establish the adjusted state hourly minimum wage” that applies to the 12 months starting the following January 1.</span>
+        <span>The new rate equals the current state rate plus a percentage equal to the change in the average Consumer Price Index for All Urban Consumers (CPI-U) over the most recent calendar year for which data is available. Each annual adjustment cannot be less than zero.</span>
+      </blockquote>
+      <div class="formula">Wage<sub>2029</sub> = $15.00 × (1 + ΔCPI-U<sub>2027 avg vs 2026 avg</sub>)<br>e.g. $15.00 × 1.026 = <strong>$15.39</strong></div>
+      <ul class="notes">
+        <li><strong>The Commissioner of Labor and Industry</strong> (Virginia DOLI) does the calculation and publishes the rate. The General Assembly does not vote on it.</li>
+        <li><strong>The index is national CPI-U</strong>, published by the U.S. Bureau of Labor Statistics. It is not a Virginia or South-region index.</li>
+        <li><strong>The rate can never go down.</strong> If prices fall, the adjustment is zero and the rate holds.</li>
+        <li><strong>Rounding is not specified</strong> in the statute. DOLI has rounded to the nearest cent ($12.41 × 1.029 = $12.77). This forecast does the same each year.</li>
+        <li><strong>Two-year lag.</strong> Because the rate is fixed by October 1, the latest full year of data is the year before. The 2029 rate reflects 2027 prices, the 2030 rate reflects 2028, and so on.</li>
+        <li><strong>Average versus December.</strong> For the 2025 and 2026 increases, DOLI used the December-to-December change (3.4% for 2023 and 2.9% for 2024). The amended text says “average,” which points to the annual-average change. For 2027 the two measures are expected to be within about 0.1 point of each other.</li>
+      </ul>
+    </div>
+    <div style="display:grid;gap:14px;align-content:start;min-width:0">
+      <h3>Calendar to the first indexed rate</h3>
+      <ol class="timeline">
+        <li><span class="when">Jan 1, 2027</span><span class="what">Statutory step to <strong>$13.75</strong>.</span></li>
+        <li><span class="when">Jan–Dec 2027</span><span class="what">The price year that will drive the 2029 increase.</span></li>
+        <li><span class="when">Jan 1, 2028</span><span class="what">Statutory step to <strong>$15.00</strong>. This is the base for indexing.</span></li>
+        <li><span class="when">Mid-Jan 2028</span><span class="what">BLS releases December 2027 CPI and the 2027 annual average.</span></li>
+        <li><span class="when">By Oct 1, 2028</span><span class="what">DOLI Commissioner announces the adjusted 2029 rate.</span></li>
+        <li><span class="when">Jan 1, 2029</span><span class="what">First inflation-adjusted rate takes effect. The cycle then repeats every year.</span></li>
+      </ol>
+      <p class="lede" style="font-size:0.93rem">Price trend for 2027: the August 2026 Survey of Professional Forecasters (Q3) puts 2027 headline CPI near 2.5%. CPI-U ran hot in spring 2026 (3.4% year over year in August), and that higher 2026 level carries into the 2027 annual average. The base estimate is <strong>2.6%</strong>, or about <strong>$15.39</strong>. A 2.3% to 3.0% range gives $15.35 to $15.45.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="fc">
+  <div style="display:grid;gap:6px">
+    <span class="eyebrow">Forecast · 2029–2070</span>
+    <h2 id="fc">Forty-four years of the Virginia minimum wage</h2>
+    <p class="lede">From 2029 the rate depends only on inflation. Pick a scenario or set your own CPI assumptions. Rates from 2026 through 2028 are fixed by law and do not change.</p>
+  </div>
+  <div class="tool">
+    <div class="controls">
+      <div class="field">
+        <label id="scenLabel">Scenario</label>
+        <div class="seg" role="group" aria-labelledby="scenLabel" id="scen">
+          <button type="button" data-s="low" aria-pressed="false">Low</button>
+          <button type="button" data-s="base" aria-pressed="true">Base</button>
+          <button type="button" data-s="high" aria-pressed="false">High</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="c27">2027 CPI-U change (drives 2029)</label>
+        <div class="row"><input type="range" id="c27" min="0" max="6" step="0.1" value="2.6"><output id="c27o" for="c27">2.6%</output></div>
+      </div>
+      <div class="field">
+        <label for="lr">Annual CPI-U, 2028 onward</label>
+        <div class="row"><input type="range" id="lr" min="0" max="6" step="0.1" value="2.3"><output id="lro" for="lr">2.3%</output></div>
+      </div>
+    </div>
+    <div class="chart-box" id="chartBox">
+      <svg id="chart" viewBox="0 0 960 400" role="img" aria-label="Line chart of the Virginia minimum wage from 2009 through 2070, with law in blue and forecast in amber"></svg>
+      <div class="tip" id="tip" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i class="sw law"></i>Enacted or set by law</span>
+      <span><i class="sw fc"></i>Your forecast</span>
+      <span><i class="sw band"></i>Range from Low (2.0%) to High (3.0%) scenarios</span>
+    </div>
+    <div class="milestones" id="milestones"></div>
+  </div>
+</section>
+
+<section aria-labelledby="tbl">
+  <div style="display:grid;gap:6px">
+    <span class="eyebrow">Year by year</span>
+    <h2 id="tbl">Full schedule, 2026–2070</h2>
+    <p class="lede" id="tblNote">Values follow the scenario selected above. “2026 dollars” deflates by the same CPI assumption, which shows that indexing holds buying power roughly flat after 2028.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Effective Jan 1</th><th>Basis</th><th>Hourly rate</th><th>Change</th><th>CPI year used</th><th>Full-time annual (2,080 h)</th><th>In 2026 dollars</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="meth">
+  <div style="display:grid;gap:6px">
+    <span class="eyebrow">Method and sources</span>
+    <h2 id="meth">How the forecast is built</h2>
+  </div>
+  <ul class="notes" style="color:var(--ink)">
+    <li><strong>Recurrence:</strong> Rate<sub>y</sub> = round(Rate<sub>y−1</sub> × (1 + max(0, CPI<sub>y−2</sub>)), cents) for every year from 2029, starting from $15.00 in 2028.</li>
+    <li><strong>Base (2.6% then 2.3%):</strong> The 2.3% long-run rate matches the Philadelphia Fed SPF 10-year headline CPI expectation (2.30% for 2026–2035) and CBO’s CPI path of 2.3% from 2028 onward. The 2027 figure adds the carry-over from 2026’s price jump to the SPF 2027 forecast.</li>
+    <li><strong>Low (2.3% then 2.0%):</strong> CPI sits at roughly the Federal Reserve’s 2% target. CPI usually runs a few tenths above the Fed’s preferred PCE gauge, so this is a deliberately cool path.</li>
+    <li><strong>High (3.0% then 3.0%):</strong> Inflation stays near its 2025–26 pace. That is about 0.4 point above the 1990–2025 CPI-U average of roughly 2.6%.</li>
+    <li><strong>Not modeled:</strong> future changes to the law, a higher federal minimum, regional or local wages (Virginia has none), and tipped-wage rules. Projections decades out depend entirely on the inflation assumption. Treat them as illustrations of the indexing formula, not predictions of policy.</li>
+  </ul>
+  <ol class="sources">
+    <li><a href="https://law.lis.virginia.gov/vacode/title40.1/chapter3/section40.1-28.10/" target="_blank" rel="noopener">Code of Virginia § 40.1-28.10</a> (Virginia LIS)</li>
+    <li><a href="https://lis.virginia.gov/bill-details/20261/HB1" target="_blank" rel="noopener">HB 1, 2026 Session, Chapter 350</a> (Virginia LIS)</li>
+    <li><a href="https://www.governor.virginia.gov/newsroom/news-releases/2026/april-releases/name-1116004-en.html" target="_blank" rel="noopener">Governor Spanberger signs bills to raise state minimum wage</a> (Office of the Governor, April 2026)</li>
+    <li><a href="https://virginiamercury.com/2026/04/09/virginia-to-raise-minimum-wage-to-15-by-2028-under-new-law/" target="_blank" rel="noopener">Virginia to raise minimum wage to $15 by 2028 under new law</a> (Virginia Mercury)</li>
+    <li><a href="https://doli.virginia.gov/wp-content/uploads/2025/12/2026-Virginia-Minimum-Wage-Poster.pdf" target="_blank" rel="noopener">2026 Virginia Minimum Wage Poster</a> (DOLI)</li>
+    <li><a href="https://www.bls.gov/news.release/cpi.t05.htm" target="_blank" rel="noopener">CPI-U 12-month changes through August 2026</a> (BLS)</li>
+    <li><a href="https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/spf-q3-2026" target="_blank" rel="noopener">Third Quarter 2026 Survey of Professional Forecasters</a> (Philadelphia Fed)</li>
+    <li><a href="https://www.cbo.gov/publication/62105" target="_blank" rel="noopener">The Budget and Economic Outlook: 2026 to 2036</a> (CBO)</li>
+  </ol>
+</section>
+
+<footer>
+  <span>Information current as of October 12, 2026. The September 2026 CPI release is due October 14, 2026.</span>
+  <span>This is an independent estimate for information only. It is not legal advice and not an official DOLI figure.</span>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  // Enacted history (effective dates) and fixed future steps.
+  const HISTORY = [
+    { date: "2009-07-24", wage: 7.25, note: "Federal minimum applies" },
+    { date: "2021-05-01", wage: 9.50, note: "2020 Act, first step" },
+    { date: "2022-01-01", wage: 11.00, note: "2020 Act" },
+    { date: "2023-01-01", wage: 12.00, note: "2020 Act" },
+    { date: "2025-01-01", wage: 12.41, note: "CPI +3.4% (2023)" },
+    { date: "2026-01-01", wage: 12.77, note: "CPI +2.9% (2024)" },
+    { date: "2027-01-01", wage: 13.75, note: "2026 Act (HB 1)" },
+    { date: "2028-01-01", wage: 15.00, note: "2026 Act (HB 1)" }
+  ];
+  const SCEN = {
+    low:  { c27: 2.3, lr: 2.0 },
+    base: { c27: 2.6, lr: 2.3 },
+    high: { c27: 3.0, lr: 3.0 }
+  };
+  const LAW = { 2026: 12.77, 2027: 13.75, 2028: 15.00 };
+  const END = 2070;
+  const fmt = v => "$" + v.toFixed(2);
+  const fmtK = v => "$" + Math.round(v).toLocaleString("en-US");
+  const r2 = v => Math.round(v * 100 + 1e-9) / 100;
+
+  function project(c27, lr) {
+    // cpi[y] = annual CPI-U change for calendar year y (as decimal)
+    const cpi = y => (y === 2027 ? c27 : lr) / 100;
+    const rows = [];
+    let price = 1; // 2026 price level = 1
+    let prev = null;
+    for (let y = 2026; y <= END; y++) {
+      if (y >= 2027) price *= 1 + cpi(y);
+      let wage, basis, cpiYear = null;
+      if (LAW[y] != null) { wage = LAW[y]; basis = "law"; }
+      else { cpiYear = y - 2; wage = r2(prev * (1 + Math.max(0, cpi(cpiYear)))); basis = "fc"; }
+      rows.push({ y, wage, basis, cpiYear, cpiPct: cpiYear ? cpi(cpiYear) * 100 : null, chg: prev ? wage / prev - 1 : 12.77 / 12.41 - 1, real: wage / price });
+      prev = wage;
+    }
+    return rows;
+  }
+
+  const $ = id => document.getElementById(id);
+  const state = { scen: "base", c27: 2.6, lr: 2.3 };
+  try {
+    const saved = JSON.parse(localStorage.getItem("vaWageScenario") || "null");
+    if (saved && typeof saved.c27 === "number") Object.assign(state, saved);
+  } catch (e) {}
+
+  // Today's rate and next step
+  function todayInfo() {
+    const today = new Date();
+    const iso = today.toISOString().slice(0, 10);
+    let cur = HISTORY[0], next = null;
+    for (const h of HISTORY) { if (h.date <= iso) cur = h; else if (!next) next = h; }
+    const long = d => new Date(d + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    $("nowWage").textContent = fmt(cur.wage);
+    $("nowSub").textContent = "per hour since " + long(cur.date);
+    if (next) {
+      const days = Math.ceil((new Date(next.date + "T00:00:00") - today) / 864e5);
+      $("nextWage").textContent = fmt(next.wage);
+      $("nextSub").textContent = long(next.date) + " · in " + days + " day" + (days === 1 ? "" : "s") + " (+" + ((next.wage / cur.wage - 1) * 100).toFixed(1) + "%)";
+    } else {
+      $("nextWage").textContent = "CPI";
+      $("nextSub").textContent = "Next January 1, set by DOLI each October 1";
+    }
+    // Schedule strip
+    const strip = HISTORY.slice(1).map(h => {
+      const isCur = h === cur, fut = h.date > iso;
+      const yr = h.date.slice(0, 4);
+      const d = h.date === "2021-05-01" ? "May 1, 2021" : "Jan 1, " + yr;
+      const pill = isCur ? '<span class="pill now">Now</span>' : fut ? '<span class="pill law">Enacted</span>' : "";
+      return `<div class="step ${isCur ? "current" : ""} ${fut ? "future" : ""}"><span class="d">${d}</span><span class="w num">${fmt(h.wage)}</span><span class="n">${h.note}</span>${pill}</div>`;
+    });
+    strip.push(`<div class="step fc"><span class="d">Jan 1, 2029</span><span class="w num" id="strip29">$15.39</span><span class="n">CPI +? (2027)</span><span class="pill fc">Forecast</span></div>`);
+    $("steps").innerHTML = strip.join("");
+    return iso.slice(0, 4) | 0;
+  }
+  const thisYear = todayInfo();
+
+  // Chart
+  let W = 960, H = 400; const M = { l: 44, r: 56, t: 16, b: 34 };
+  const X0 = 2009, X1 = END;
+  const xs = y => M.l + (y - X0) / (X1 - X0) * (W - M.l - M.r);
+  let yMax = 60;
+  const ys = v => H - M.b - v / yMax * (H - M.t - M.b);
+  const svg = $("chart");
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); (parent || svg).appendChild(e); return e; };
+  const dec = d => { const [Y, Mo, D] = d.split("-").map(Number); return Y + (Mo - 1) / 12 + (D - 1) / 365; };
+
+  function lawPath() {
+    let p = "";
+    HISTORY.forEach((h, i) => {
+      const x = xs(dec(h.date)), y = ys(h.wage);
+      if (i === 0) p += `M${x},${y}`; else p += `H${x}V${y}`;
+    });
+    return p + `H${xs(2029)}`;
+  }
+  function stepPath(rows) {
+    const f = rows.filter(r => r.y >= 2028);
+    let p = `M${xs(2029)},${ys(f[0].wage)}`;
+    f.slice(1).forEach(r => { p += `V${ys(r.wage)}H${xs(Math.min(r.y + 1, END + 1))}`; });
+    return p;
+  }
+
+  function drawChart(rows, low, high) {
+    svg.innerHTML = "";
+    W = Math.max(320, Math.round($("chartBox").clientWidth || 960));
+    H = Math.round(Math.min(400, Math.max(260, W * 0.45)));
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const top = Math.max(high[high.length - 1].wage, rows[rows.length - 1].wage);
+    yMax = Math.ceil(top / 10) * 10 + (top % 10 > 7 ? 10 : 0);
+    if (yMax < 20) yMax = 20;
+    const step = yMax > 60 ? 20 : 10;
+    for (let v = 0; v <= yMax; v += step / 2) {
+      const major = v % step === 0;
+      el("line", { x1: M.l, x2: W - M.r, y1: ys(v), y2: ys(v), stroke: "var(--grid)", "stroke-width": major ? 1 : 0.5 });
+      if (major) { const t = el("text", { x: M.l - 8, y: ys(v) + 4, "text-anchor": "end" }); t.textContent = "$" + v; }
+    }
+    (W < 560 ? [2010, 2030, 2050, 2070] : [2010, 2020, 2030, 2040, 2050, 2060, 2070]).forEach(y => {
+      el("line", { x1: xs(y), x2: xs(y), y1: H - M.b, y2: H - M.b + 5, stroke: "var(--muted)" });
+      const t = el("text", { x: xs(y), y: H - M.b + 20, "text-anchor": "middle" }); t.textContent = y;
+    });
+    el("line", { x1: M.l, x2: W - M.r, y1: H - M.b, y2: H - M.b, stroke: "var(--muted)", "stroke-width": 1 });
+    // Forecast region shading + divider
+    el("rect", { x: xs(2029), y: M.t, width: W - M.r - xs(2029), height: H - M.t - M.b, fill: "var(--amber-soft)", opacity: 0.5 });
+    el("line", { x1: xs(2029), x2: xs(2029), y1: M.t, y2: H - M.b, stroke: "var(--amber)", "stroke-dasharray": "3 4" });
+    const lab = el("text", { x: xs(2029) + 6, y: M.t + 14, fill: "var(--amber)" }); lab.textContent = "CPI-indexed →";
+    if (W >= 480) { const lab2 = el("text", { x: xs(2029) - 6, y: M.t + 14, "text-anchor": "end" }); lab2.textContent = "← set by statute"; }
+    // Band
+    const lo = low.filter(r => r.y >= 2028), hi = high.filter(r => r.y >= 2028);
+    let band = `M${xs(2029)},${ys(hi[0].wage)}`;
+    hi.slice(1).forEach(r => { band += `V${ys(r.wage)}H${xs(r.y + 1 > END ? END + 1 : r.y + 1)}`; });
+    const loRev = lo.slice(1).reverse();
+    band += `V${ys(loRev[0].wage)}`;
+    loRev.forEach((r, i) => { band += `H${xs(r.y)}V${ys(i + 1 < loRev.length ? loRev[i + 1].wage : lo[0].wage)}`; });
+    band += "Z";
+    el("path", { d: band, fill: "var(--band)", stroke: "none" });
+    // Lines
+    el("path", { d: lawPath(), fill: "none", stroke: "var(--navy)", "stroke-width": 2.5, "stroke-linejoin": "round" });
+    el("path", { id: "fcLine", d: stepPath(rows), fill: "none", stroke: "var(--amber)", "stroke-width": 2.5, "stroke-linejoin": "round" });
+    // Endpoints
+    const last = rows[rows.length - 1];
+    el("circle", { cx: xs(END + 1), cy: ys(last.wage), r: 4, fill: "var(--amber)" });
+    const et = el("text", { x: xs(END + 1) + 6, y: ys(last.wage) + 4, fill: "var(--amber)" }); et.textContent = fmt(last.wage);
+    el("circle", { cx: xs(2028), cy: ys(15), r: 4, fill: "var(--navy)" });
+    // Hover layer
+    const cross = el("line", { x1: 0, x2: 0, y1: M.t, y2: H - M.b, stroke: "var(--muted)", "stroke-width": 1, visibility: "hidden" });
+    const dot = el("circle", { r: 5, fill: "var(--surface)", "stroke-width": 2.5, visibility: "hidden" });
+    const hit = el("rect", { x: M.l, y: M.t, width: W - M.l - M.r, height: H - M.t - M.b, fill: "transparent" });
+    const tip = $("tip");
+    const histByYear = y => { let w = HISTORY[0].wage; HISTORY.forEach(h => { if (dec(h.date) <= y + 0.5) w = h.wage; }); return w; };
+    function move(ev) {
+      const rect = svg.getBoundingClientRect();
+      const px = (ev.clientX - rect.left) / rect.width * W;
+      let y = Math.round(X0 + (px - M.l) / (W - M.l - M.r) * (X1 - X0));
+      y = Math.max(2010, Math.min(END, y));
+      const row = rows.find(r => r.y === y);
+      const wage = row ? row.wage : histByYear(y);
+      const isFc = row && row.basis === "fc";
+      const cx = xs(y + 0.5);
+      cross.setAttribute("x1", cx); cross.setAttribute("x2", cx); cross.setAttribute("visibility", "visible");
+      dot.setAttribute("cx", cx); dot.setAttribute("cy", ys(wage)); dot.setAttribute("stroke", isFc ? "var(--amber)" : "var(--navy)"); dot.setAttribute("visibility", "visible");
+      tip.innerHTML = `<strong>${y}</strong> · ${fmt(wage)}/hr<br>${isFc ? "Forecast, CPI " + row.cpiYear + " +" + row.cpiPct.toFixed(1) + "%" : "Set by law"}`;
+      tip.style.left = (cx / W * rect.width) + "px";
+      tip.style.top = (ys(wage) / H * rect.height) + "px";
+      tip.hidden = false;
+    }
+    function leave() { cross.setAttribute("visibility", "hidden"); dot.setAttribute("visibility", "hidden"); tip.hidden = true; }
+    hit.addEventListener("pointermove", move);
+    hit.addEventListener("pointerdown", move);
+    hit.addEventListener("pointerleave", leave);
+  }
+
+  function render() {
+    const rows = project(state.c27, state.lr);
+    const low = project(SCEN.low.c27, SCEN.low.lr), high = project(SCEN.high.c27, SCEN.high.lr);
+    drawChart(rows, low, high);
+    const r29 = rows.find(r => r.y === 2029), r70 = rows[rows.length - 1];
+    $("est2029").textContent = fmt(r29.wage);
+    $("strip29").textContent = fmt(r29.wage);
+    $("strip29").nextElementSibling.textContent = "CPI +" + state.c27.toFixed(1) + "% (2027)";
+    $("est2070").textContent = fmt(r70.wage);
+    const nm = state.scen ? state.scen[0].toUpperCase() + state.scen.slice(1) + " scenario" : "Custom scenario";
+    $("est2070sub").textContent = nm + " · " + fmtK(r70.wage * 2080) + " a year full-time";
+    // Milestones
+    const first = t => { const r = rows.find(r => r.wage >= t); return r ? r.y : "after " + END; };
+    const r40 = rows.find(r => r.y === 2040), r50 = rows.find(r => r.y === 2050);
+    $("milestones").innerHTML = [
+      ["2040 rate", fmt(r40.wage)],
+      ["2050 rate", fmt(r50.wage)],
+      ["First year at $20+", first(20)],
+      ["First year at $25+", first(25)],
+      ["First year at $30+", first(30)]
+    ].map(([k, v]) => `<div class="ms"><span class="k">${k}</span><span class="v num">${v}</span></div>`).join("");
+    // Table
+    $("tbody").innerHTML = rows.map(r => {
+      const cls = [r.basis, r.y % 10 === 9 ? "decade" : "", r.y === thisYear ? "thisyear" : ""].join(" ");
+      const basis = r.basis === "law" ? '<span class="pill law">Law</span>' : '<span class="pill fc">Forecast</span>';
+      const cpi = r.cpiYear ? `${r.cpiYear} · ${r.cpiPct.toFixed(1)}%` : r.y === 2026 ? "2024 · 2.9%" : "—";
+      return `<tr class="${cls}"><td>${r.y}</td><td>${basis}</td><td>${fmt(r.wage)}</td><td>+${(r.chg * 100).toFixed(1)}%</td><td>${cpi}</td><td>${fmtK(r.wage * 2080)}</td><td>${fmt(r.real)}</td></tr>`;
+    }).join("");
+    // Controls
+    document.querySelectorAll("#scen button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.s === state.scen)));
+    $("c27").value = state.c27; $("c27o").textContent = state.c27.toFixed(1) + "%";
+    $("lr").value = state.lr; $("lro").textContent = state.lr.toFixed(1) + "%";
+    try { localStorage.setItem("vaWageScenario", JSON.stringify(state)); } catch (e) {}
+  }
+
+  document.querySelectorAll("#scen button").forEach(b => b.addEventListener("click", () => {
+    state.scen = b.dataset.s; Object.assign(state, SCEN[state.scen]); render();
+  }));
+  const match = () => { state.scen = Object.keys(SCEN).find(k => SCEN[k].c27 === state.c27 && SCEN[k].lr === state.lr) || null; };
+  $("c27").addEventListener("input", e => { state.c27 = +e.target.value; match(); render(); });
+  $("lr").addEventListener("input", e => { state.lr = +e.target.value; match(); render(); });
+  render();
+  let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(render, 120); });
+})();
+</script>
+</html>
