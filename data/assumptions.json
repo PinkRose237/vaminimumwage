@@ -1,0 +1,29 @@
+{
+ "source": "Federal Reserve Bank of Philadelphia, Survey of Professional Forecasters, 2026 Q3 (released 2026-08-14): median headline CPI, Q4/Q4",
+ "sourceUrl": "https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/spf-q3-2026",
+ "survey": "2026Q3",
+ "updated": "2026-10-12",
+ "byYear": {
+  "2026": 3.6,
+  "2027": 2.3,
+  "2028": 2.3
+ },
+ "longRun": 2.3,
+ "longRunNote": "SPF 10-year (2026\u20132035) annual-average headline CPI expectation",
+ "scenarios": {
+  "low": {
+   "label": "Low",
+   "offset": -0.5,
+   "longRun": 2.0
+  },
+  "base": {
+   "label": "Base",
+   "offset": 0
+  },
+  "high": {
+   "label": "High",
+   "offset": 0.7,
+   "longRun": 3.0
+  }
+ }
+}

@@ -1,0 +1,65 @@
+{
+ "section": "40.1-28.10",
+ "statuteUrl": "https://law.lis.virginia.gov/vacode/title40.1/chapter3/section40.1-28.10/",
+ "statuteApi": "https://law.lis.virginia.gov/api/CoVSectionsGetSectionDetailsJson/40.1-28.10/",
+ "federalMinimum": 7.25,
+ "indexing": {
+  "firstYear": 2029,
+  "lagYears": 2,
+  "announceBy": "October 1",
+  "measure": "December-to-December change in CPI-U, U.S. city average",
+  "floorZero": true,
+  "rounding": "nearest cent"
+ },
+ "schedule": [
+  {
+   "effective": "2009-07-24",
+   "wage": 7.25,
+   "basis": "federal",
+   "note": "Federal minimum applies"
+  },
+  {
+   "effective": "2021-05-01",
+   "wage": 9.5,
+   "basis": "statute",
+   "note": "2020 Act, first step"
+  },
+  {
+   "effective": "2022-01-01",
+   "wage": 11.0,
+   "basis": "statute",
+   "note": "2020 Act"
+  },
+  {
+   "effective": "2023-01-01",
+   "wage": 12.0,
+   "basis": "statute",
+   "note": "2020 Act"
+  },
+  {
+   "effective": "2025-01-01",
+   "wage": 12.41,
+   "basis": "announced",
+   "note": "CPI +3.4% (2023)"
+  },
+  {
+   "effective": "2026-01-01",
+   "wage": 12.77,
+   "basis": "statute",
+   "note": "CPI +2.9% (2024)"
+  },
+  {
+   "effective": "2027-01-01",
+   "wage": 13.75,
+   "basis": "statute",
+   "note": "2026 Act (HB 1 / SB 1)"
+  },
+  {
+   "effective": "2028-01-01",
+   "wage": 15.0,
+   "basis": "statute",
+   "note": "2026 Act (HB 1 / SB 1)"
+  }
+ ],
+ "history": "Amended 2020 (cc. 1204, 1242) and 2026 (cc. 350, 351)."
+}

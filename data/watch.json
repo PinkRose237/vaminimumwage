@@ -1,0 +1,36 @@
+{
+ "failures": {
+  "cpi": 0,
+  "spf": 0,
+  "doli": 0,
+  "statute": 0,
+  "bills": 0
+ },
+ "doli": {
+  "seen": [
+   23825542,
+   23824092,
+   23824501,
+   23820459,
+   15207,
+   15132,
+   14720,
+   13494,
+   10786,
+   8402
+  ]
+ },
+ "bills": {
+  "20261": {
+   "HB1": "Approved by Governor",
+   "HB20": "Approved by Governor",
+   "HB238": "Approved by Governor",
+   "HB948": "Failed",
+   "SB1": "Approved by Governor",
+   "SB121": "Approved by Governor",
+   "SB644": "Failed"
+  },
+  "20262": {}
+ },
+ "lastRun": "2026-10-12"
+}

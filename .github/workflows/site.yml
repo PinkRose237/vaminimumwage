@@ -1,0 +1,95 @@
+name: Update data and deploy
+
+# Every run rebuilds the site and media kit. Scheduled and manual runs first check the
+# sources (scripts/update.mjs). The schedule follows when the numbers can actually change.
+# All times UTC. Virginia is UTC−5 in winter and UTC−4 in summer.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Limit checks (comma list of cpi,spf,doli,statute,bills). Blank = all."
+        required: false
+        default: ""
+  schedule:
+    # BLS publishes CPI at 8:30 a.m. ET on a weekday between the 10th and 15th.
+    # Check daily through that window, about an hour after release.
+    - cron: "40 13 10-16 * *"
+    # Jan 1, just after midnight in Virginia: the new rate takes effect, so the
+    # "current" and "next" cards roll over. Mid-January also brings December CPI.
+    - cron: "15 5 1 1 *"
+    # General Assembly session (January to March), Governor's action deadline and the
+    # reconvened session (April): check bills every weekday.
+    - cron: "0 14 * 1-4 1-5"
+    # New laws take effect July 1 and the Code of Virginia updates around then.
+    - cron: "15 5 1-3 7 *"
+    # Rest of the year: weekly on Monday. This covers DOLI announcements (posted July 29 in 2025),
+    # Code of Virginia changes and special sessions.
+    - cron: "0 14 * 5-12 1"
+    # Daily run-up to DOLI's October 1 deadline for the next year's rate.
+    - cron: "0 14 20-30 9 *"
+    - cron: "0 14 1-2 10 *"
+    # Philadelphia Fed Survey of Professional Forecasters, mid-Feb/May/Aug/Nov.
+    - cron: "0 16 12-20 2,5,8,11 *"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: site
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check sources (CPI, inflation outlook, DOLI, statute, bills)
+        if: github.event_name != 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+          AI_ENABLED: ${{ vars.AI_ENABLED }}
+        run: |
+          ONLY="${{ github.event.inputs.only }}"
+          node scripts/update.mjs ${ONLY:+--only=$ONLY}
+
+      - name: Install Chromium for image rendering
+        run: npx playwright install --with-deps chromium
+
+      - name: Build site and media kit
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,20 @@
+{
+  "name": "vaminimumwage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Virginia minimum wage tracker and CPI-indexed forecast through 2070",
+  "type": "module",
+  "homepage": "https://pinkrose237.github.io/vaminimumwage/",
+  "repository": { "type": "git", "url": "https://github.com/PinkRose237/vaminimumwage.git" },
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node scripts/build.mjs && node scripts/images.mjs",
+    "build:html": "node scripts/build.mjs",
+    "update": "node scripts/update.mjs",
+    "serve": "npx --yes http-server@14.1.1 _site -p 8080 -c-1"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

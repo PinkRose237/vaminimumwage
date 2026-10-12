@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Card renderer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=Public+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Poster cards for social media. Fixed pixel canvas per format; one deliberate dark navy world, so no theme blocks. */
+:root {
+  --bg: #13234d;
+  --bg2: #0e1a3b;
+  --ink: #f4f6fb;
+  --muted: #a9b5d3;
+  --law: #9fbcf7;
+  --amber: #f3ac5f;
+  --rule: rgba(244, 246, 251, 0.28);
+  --display: "Zilla Slab", Rockwell, Georgia, serif;
+  --body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --data: "IBM Plex Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { background: var(--bg); }
+body { color: var(--ink); font-family: var(--body); -webkit-font-smoothing: antialiased; }
+#card { position: relative; overflow: hidden; background: radial-gradient(120% 80% at 85% 0%, #1d3a7a 0%, var(--bg) 55%, var(--bg2) 100%); display: flex; flex-direction: column; }
+.frame { position: absolute; inset: var(--inset); border: 3px double var(--rule); pointer-events: none; }
+.inner { position: relative; flex: 1; display: flex; flex-direction: column; padding: var(--pad); gap: var(--gap); }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.mark { display: inline-flex; align-items: center; gap: 0.5em; font-family: var(--data); font-size: var(--eyebrow); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.mark b { display: inline-grid; place-items: center; width: 2.3em; height: 2.3em; border-radius: 0.35em; background: var(--ink); color: var(--bg); letter-spacing: 0; font-weight: 500; }
+.tag { font-family: var(--data); font-size: var(--eyebrow); letter-spacing: 0.1em; text-transform: uppercase; padding: 0.35em 0.9em; border-radius: 99px; border: 2px solid currentColor; }
+.tag.law { color: var(--law); }
+.tag.fc { color: var(--amber); }
+.main { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: calc(var(--gap) * 0.6); }
+.kicker { font-family: var(--display); font-weight: 500; font-size: var(--kicker); line-height: 1.15; color: var(--ink); text-wrap: balance; }
+.hero { font-family: var(--display); font-weight: 700; font-size: var(--hero); line-height: 0.9; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hero.law { color: var(--ink); }
+.hero.fc { color: var(--amber); }
+.hero small { font-size: 0.28em; font-weight: 500; letter-spacing: 0; color: var(--muted); margin-left: 0.15em; }
+.sub { font-size: var(--sub); line-height: 1.35; color: var(--muted); max-width: 30em; }
+.sub strong { color: var(--ink); font-weight: 600; }
+.facts { display: grid; grid-template-columns: repeat(var(--factcols), minmax(0, 1fr)); border-top: 2px solid var(--rule); }
+.fact { padding-top: 0.7em; padding-right: 1em; display: grid; gap: 0.2em; font-size: var(--fact); }
+.fact .k { font-family: var(--data); font-size: 0.62em; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.fact .v { font-family: var(--display); font-weight: 700; font-size: 1.25em; font-variant-numeric: tabular-nums; }
+.fact .v.fc { color: var(--amber); }
+.fact .v.law { color: var(--law); }
+.foot > span:last-child { white-space: nowrap; }
+.foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; font-family: var(--data); font-size: var(--foot); color: var(--muted); line-height: 1.4; }
+.foot .url { color: var(--ink); }
+
+/* Year list */
+.list { flex: 1; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); column-gap: var(--colgap); align-content: center; }
+.col { display: grid; align-content: start; }
+.yr { line-height: 1.25; display: flex; justify-content: space-between; align-items: baseline; padding-block: var(--rowpad); border-bottom: 1px solid var(--rule); font-size: var(--row); font-variant-numeric: tabular-nums; }
+.yr .y { font-family: var(--data); color: var(--muted); font-size: 0.82em; }
+.yr .w { font-family: var(--display); font-weight: 700; }
+.yr.law .w { color: var(--ink); }
+.yr.fc .w { color: var(--amber); }
+.yr.now { background: rgba(159, 188, 247, 0.14); margin-inline: -0.35em; padding-inline: 0.35em; }
+.legend { display: flex; gap: 1.4em; font-family: var(--data); font-size: var(--foot); color: var(--muted); }
+.legend i { display: inline-block; width: 0.9em; height: 0.9em; border-radius: 2px; margin-right: 0.4em; vertical-align: -0.1em; }
+.title { font-family: var(--display); font-weight: 700; font-size: var(--kicker); line-height: 1.1; text-wrap: balance; }
+
+/* Formats */
+.f-story  { width: 1080px; height: 1920px; --inset: 36px; --pad: 250px 96px 230px; --gap: 56px; --eyebrow: 26px; --kicker: 64px; --hero: 270px; --sub: 40px; --fact: 40px; --factcols: 2; --foot: 26px; --cols: 3; --colgap: 40px; --row: 36px; --rowpad: 10px; }
+.f-post   { width: 1080px; height: 1350px; --inset: 30px; --pad: 92px 88px 80px; --gap: 44px; --eyebrow: 23px; --kicker: 56px; --hero: 260px; --sub: 34px; --fact: 34px; --factcols: 2; --foot: 22px; --cols: 3; --colgap: 44px; --row: 31px; --rowpad: 6px; }
+.f-square { width: 1080px; height: 1080px; --inset: 28px; --pad: 80px 84px 70px; --gap: 34px; --eyebrow: 22px; --kicker: 50px; --hero: 230px; --sub: 30px; --fact: 30px; --factcols: 3; --foot: 21px; --cols: 3; --colgap: 40px; --row: 25px; --rowpad: 3px; }
+.f-og     { width: 1200px; height: 630px; --inset: 22px; --pad: 60px 70px 52px; --gap: 22px; --eyebrow: 20px; --kicker: 40px; --hero: 168px; --sub: 25px; --fact: 25px; --factcols: 3; --foot: 18px; }
+.f-story .foot { flex-direction: column; align-items: flex-start; gap: 10px; }
+.f-icon   { width: 180px; height: 180px; }
+.f-icon .inner { padding: 0; align-items: center; justify-content: center; }
+.f-icon .ic { font-family: var(--display); font-weight: 700; font-size: 74px; line-height: 1; color: var(--ink); }
+.f-icon .ic span { display: block; font-family: var(--data); font-size: 22px; letter-spacing: 0.14em; color: var(--amber); text-align: center; margin-top: 6px; }
+
+/* OG layout */
+.og { display: grid; grid-template-columns: 1.1fr 1fr; gap: 44px; flex: 1; align-items: center; }
+.og .steps { display: grid; gap: 12px; }
+.og .st { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--rule); padding-bottom: 8px; font-size: 27px; }
+.og .st .d { font-family: var(--data); font-size: 0.75em; color: var(--muted); }
+.og .st .w { font-family: var(--display); font-weight: 700; font-size: 1.3em; font-variant-numeric: tabular-nums; }
+.og .st .w.fc { color: var(--amber); }
+.og .st .w.law { color: var(--law); }
+</style>
+</head>
+<body>
+<div id="card"></div>
+<script>window.CARDS = {{CARDS_JSON}};</script>
+<script>
+(function () {
+  const C = window.CARDS;
+  const fmt = v => "$" + v.toFixed(2);
+  const card = document.getElementById("card");
+  const top = (tag, cls) => `<div class="top"><span class="mark"><b>VA</b>Virginia minimum wage</span>${tag ? `<span class="tag ${cls}">${tag}</span>` : ""}</div>`;
+  const foot = (left) => `<div class="foot"><span>${left}<br>Updated ${C.updatedShort}</span><span class="url">${C.siteHost}</span></div>`;
+  const facts = list => `<div class="facts">${list.map(([k, v, c]) => `<div class="fact"><span class="k">${k}</span><span class="v ${c || ""}">${v}</span></div>`).join("")}</div>`;
+
+  const T = {
+    current(f) {
+      const extra = f === "square" ? [["Full-time", C.current.annual]] : [];
+      return top("In effect", "law") +
+        `<div class="main"><div class="kicker">The minimum wage in Virginia is</div>
+         <div class="hero law">${fmt(C.current.wage)}<small>/hr</small></div>
+         <p class="sub">In effect since <strong>${C.current.since}</strong>. Employers must pay at least this rate, or the federal minimum if higher.</p></div>` +
+        facts([["Next: " + C.next.dateShort, fmt(C.next.wage), "law"], ...(f === "square" ? [] : [["Full-time / yr", C.current.annual]]), ...extra]) +
+        foot("Va. Code § 40.1-28.10");
+    },
+    next(f) {
+      return top(C.next.fixed ? "Set by law" : "Estimate", C.next.fixed ? "law" : "fc") +
+        `<div class="main"><div class="kicker">Virginia’s minimum wage rises on ${C.next.date}</div>
+         <div class="hero ${C.next.fixed ? "law" : "fc"}">${fmt(C.next.wage)}<small>/hr</small></div>
+         <p class="sub">Up <strong>${C.next.delta}</strong> from ${fmt(C.current.wage)}. Full-time, that is <strong>${C.next.annual}</strong> a year.</p></div>` +
+        facts(C.next.after ? [[C.next.after.label, fmt(C.next.after.wage), C.next.after.fixed ? "law" : "fc"], ["Then", "CPI-indexed"]] : [["Today", fmt(C.current.wage)]]) +
+        foot("Va. Code § 40.1-28.10");
+    },
+    estimate(f) {
+      return top("Estimate", "fc") +
+        `<div class="main"><div class="kicker">Virginia’s first inflation-indexed minimum wage, ${C.est.year}</div>
+         <div class="hero fc">${fmt(C.est.wage)}<small>/hr</small></div>
+         <p class="sub">DOLI sets it by <strong>October 1, ${C.est.year - 1}</strong>: $15.00 plus the ${C.est.cpiYear} rise in CPI-U. Base estimate assumes <strong>${C.est.cpiPct}</strong>.</p></div>` +
+        facts([["Range (low–high)", C.est.range, "fc"], ...(f === "square" ? [["2030 est.", C.est.next, "fc"]] : []), ["2050 est.", C.est.y2050, "fc"]]) +
+        foot("Base estimate · not an official DOLI figure");
+    },
+    schedule(f) {
+      const rows = C.rows;
+      const cols = 3;
+      const per = Math.ceil(rows.length / cols);
+      let html = "";
+      for (let c = 0; c < cols; c++) {
+        html += `<div class="col">` + rows.slice(c * per, (c + 1) * per).map(r =>
+          `<div class="yr ${r.fixed ? "law" : "fc"} ${r.year === C.thisYear ? "now" : ""}"><span class="y">${r.year}</span><span class="w">${fmt(r.wage)}</span></div>`).join("") + `</div>`;
+      }
+      return top(null) +
+        `<div class="title">Virginia minimum wage by year, ${rows[0].year}–${rows[rows.length - 1].year}</div>
+         <div class="list">${html}</div>
+         <div class="legend"><span><i style="background:var(--ink)"></i>Set by law</span><span><i style="background:var(--amber)"></i>Base estimate (CPI ${C.est.cpiPct} then ${C.longRun})</span></div>` +
+        foot("Rates effective January 1");
+    },
+    og() {
+      return top(null) +
+        `<div class="og"><div class="main"><div class="kicker">Minimum wage today</div>
+           <div class="hero law">${fmt(C.current.wage)}<small>/hr</small></div>
+           <p class="sub">Tracker and forecast to 2070</p></div>
+         <div class="steps">${C.ogSteps.map(s => `<div class="st"><span class="d">${s.label}</span><span class="w ${s.fixed ? "law" : "fc"}">${s.est ? "≈" : ""}${fmt(s.wage)}</span></div>`).join("")}</div></div>` +
+        `<div class="foot"><span>Va. Code § 40.1-28.10 · Updated ${C.updatedShort}</span><span class="url">${C.siteHost}</span></div>`;
+    },
+    icon() { return `<div class="ic">VA<span>WAGE</span></div>`; }
+  };
+
+  // Shrink oversized text so nothing spills out of the fixed canvas.
+  function fit() {
+    card.querySelectorAll(".hero, .title, .kicker").forEach(el => {
+      let size = parseFloat(getComputedStyle(el).fontSize), n = 0;
+      while (el.scrollWidth > el.clientWidth + 1 && n++ < 80) { size -= 2; el.style.fontSize = size + "px"; }
+    });
+    const inner = card.querySelector(".inner");
+    let n = 0;
+    while (inner.scrollHeight > inner.clientHeight + 1 && n++ < 40) {
+      const cs = getComputedStyle(card);
+      const row = parseFloat(cs.getPropertyValue("--row")), pad = parseFloat(cs.getPropertyValue("--rowpad"));
+      const hero = card.querySelector(".hero");
+      if (card.querySelector(".list") && row > 18) { card.style.setProperty("--row", (row - 1) + "px"); card.style.setProperty("--rowpad", Math.max(2, pad - 0.5) + "px"); }
+      else if (hero) hero.style.fontSize = (parseFloat(getComputedStyle(hero).fontSize) - 4) + "px";
+      else break;
+    }
+  }
+
+  window.renderCard = function (type, format) {
+    card.className = "f-" + format;
+    card.removeAttribute("style");
+    card.innerHTML = `<div class="frame"></div><div class="inner">${T[type](format)}</div>`;
+    if (format === "icon") card.querySelector(".frame").remove();
+    return document.fonts.ready.then(() => { fit(); return true; });
+  };
+  const q = new URLSearchParams(location.search);
+  if (q.get("card")) window.renderCard(q.get("card"), q.get("format") || "post");
+})();
+</script>
+</body>
+</html>

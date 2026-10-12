@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wage Floor Media Kit</title>
+<meta name="description" content="Download images of Virginia's current, upcoming and estimated minimum wage for social media posts and stories.">
+<link rel="canonical" href="{{SITE_URL}}media.html">
+<meta name="theme-color" content="#1d3a7a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Virginia Wage Floor">
+<meta property="og:title" content="Virginia minimum wage media kit">
+<meta property="og:description" content="Ready-to-post images: {{NOW_WAGE}} today, {{NEXT_WAGE}} on {{NEXT_DATE}}, and the CPI-indexed estimate to 2070.">
+<meta property="og:url" content="{{SITE_URL}}media.html">
+<meta property="og:image" content="{{SITE_URL}}media/og.png?v={{VERSION}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{SITE_URL}}media/og.png?v={{VERSION}}">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="media/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>{{CSS}}
+.kit-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; }
+.formats { position: sticky; top: calc(52px + env(safe-area-inset-top, 0px)); z-index: 5; background: var(--bg); padding-block: 10px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule); }
+.formats .seg button[aria-pressed="true"] { background: var(--navy); }
+.formats .seg button:hover:not([aria-pressed="true"]) { background: var(--navy-soft); }
+.fmt-note { font-size: 0.82rem; color: var(--muted); }
+.cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; align-items: start; }
+@media (max-width: 1000px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .cards { grid-template-columns: 1fr; } }
+.kit { background: var(--surface); border: 1px solid var(--rule); display: grid; gap: 12px; padding: 12px; min-width: 0; }
+.kit .thumb { display: block; background: var(--bg); border-radius: 6px; overflow: hidden; border: 1px solid var(--rule); }
+.kit img { width: 100%; height: auto; display: block; }
+@media (max-width: 520px) { .kit .thumb { display: flex; justify-content: center; } .kit img { width: auto; max-width: 100%; max-height: 62vh; } .formats .seg { flex: 1; } }
+.kit h3 { font-size: 1.05rem; }
+.kit .meta { font-size: 0.82rem; color: var(--muted); }
+.kit .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.kit .acts .btn { flex: 1; }
+.cap { font-size: 0.86rem; background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 10px; white-space: pre-wrap; color: var(--ink); max-height: 9.5em; overflow: auto; }
+details.kit-more summary { cursor: pointer; font-size: 0.86rem; color: var(--navy); }
+.extras { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+.extras .kit img { aspect-ratio: 1200 / 630; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="./"><span class="brand-mark">VA</span><span class="brand-text">Wage Floor</span></a>
+    <nav class="nav" aria-label="Pages">
+      <a href="./">Tracker</a>
+      <a href="./#forecast">Forecast</a>
+      <a href="media.html" aria-current="page">Media kit</a>
+    </nav>
+    <a class="btn" href="media/vaminimumwage-media.zip" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>All
+    </a>
+  </div>
+</div>
+
+<div class="wrap" style="gap:28px">
+  <header class="hero" style="gap:12px">
+    <div class="mast"><h1>Media kit</h1><span class="cite">Base estimates · rebuilt {{UPDATED_LONG}}</span></div>
+    <p class="lede">Images for social posts and stories, ready to download. They update automatically whenever the law, DOLI or the CPI data changes, and estimates always use the base scenario, not the sliders. Credit <strong>{{SITE_HOST}}</strong> when you share.</p>
+  </header>
+
+  <div class="formats">
+    <div class="seg" role="group" aria-label="Image format" id="fmt">
+      <button type="button" data-f="post" aria-pressed="true">Post</button>
+      <button type="button" data-f="square" aria-pressed="false">Square</button>
+      <button type="button" data-f="story" aria-pressed="false">Story</button>
+    </div>
+    <span class="fmt-note" id="fmtNote">4:5 · 1080 × 1350 px · Instagram and Facebook feed</span>
+  </div>
+
+  <div class="cards" id="cards">{{CARDS_HTML}}</div>
+
+  <section aria-labelledby="exh" style="gap:14px">
+    <div class="sec-head"><span class="eyebrow">Also available</span><h2 id="exh">Link preview and data</h2></div>
+    <div class="extras">
+      <div class="kit">
+        <a class="thumb" href="media/og.png?v={{VERSION}}"><img src="media/og.png?v={{VERSION}}" alt="Link preview image" width="1200" height="630" loading="lazy"></a>
+        <h3>Link preview</h3><span class="meta">1200 × 630 px · used automatically when the site link is shared</span>
+        <div class="acts"><a class="btn ghost" href="media/og.png?v={{VERSION}}" download="va-minimum-wage-link-preview.png">Download PNG</a></div>
+      </div>
+      <div class="kit">
+        <h3>Year-by-year data</h3><span class="meta">Base estimate, 2026–2070, with basis and CPI year for each rate</span>
+        <div class="acts"><a class="btn ghost" href="data/forecast.csv" download>CSV</a><a class="btn ghost" href="data/forecast.json">JSON</a></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Estimates are independent projections from published CPI data and forecaster surveys. They are not official DOLI figures.</span>
+    <span><a href="./">Back to the tracker</a> · <a href="{{REPO_URL}}">Source on GitHub</a></span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  const NOTES = { post: "4:5 · 1080 × 1350 px · Instagram and Facebook feed", square: "1:1 · 1080 × 1080 px · X, LinkedIn, Threads, Bluesky", story: "9:16 · 1080 × 1920 px · Instagram, Facebook and TikTok stories" };
+  const DIMS = { post: [1080, 1350], square: [1080, 1080], story: [1080, 1920] };
+  const V = "{{VERSION}}";
+  const toast = msg => { const t = document.getElementById("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 2000); };
+  function setFormat(f) {
+    document.querySelectorAll("#fmt button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === f)));
+    document.getElementById("fmtNote").textContent = NOTES[f];
+    document.querySelectorAll(".kit[data-card]").forEach(k => {
+      const id = k.dataset.card, src = `media/${id}-${f}.png?v=${V}`;
+      const img = k.querySelector("img");
+      img.src = src; img.width = DIMS[f][0]; img.height = DIMS[f][1];
+      k.querySelector(".thumb").href = src;
+      const dl = k.querySelector("a[download]");
+      dl.href = src; dl.setAttribute("download", `va-minimum-wage-${id}-${f}.png`);
+      k.querySelector(".meta").textContent = `${DIMS[f][0]} × ${DIMS[f][1]} px PNG`;
+    });
+    try { localStorage.setItem("vaWage.fmt", f); } catch (e) {}
+  }
+  document.querySelectorAll("#fmt button").forEach(b => b.addEventListener("click", () => setFormat(b.dataset.f)));
+  document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", async () => {
+    const text = b.closest(".kit").querySelector(".cap").textContent;
+    try { await navigator.clipboard.writeText(text); toast("Caption copied"); }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(b.closest(".kit").querySelector(".cap")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Caption selected"); }
+  }));
+  document.querySelectorAll("[data-share]").forEach(b => b.addEventListener("click", async () => {
+    const k = b.closest(".kit");
+    const img = k.querySelector("img");
+    const text = k.querySelector(".cap").textContent;
+    try {
+      const blob = await (await fetch(img.src)).blob();
+      const file = new File([blob], k.querySelector("a[download]").getAttribute("download"), { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text }); return; }
+    } catch (e) { if (e && e.name === "AbortError") return; }
+    toast("Sharing images isn’t supported here. Use Download.");
+  }));
+  if (!(navigator.canShare)) document.querySelectorAll("[data-share]").forEach(b => { b.hidden = true; });
+  let f = "post";
+  try { f = localStorage.getItem("vaWage.fmt") || (window.matchMedia("(max-width: 520px)").matches ? "story" : "post"); } catch (e) {}
+  if (!NOTES[f]) f = "post";
+  setFormat(f);
+})();
+</script>
+</body>
+</html>

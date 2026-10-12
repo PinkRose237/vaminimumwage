@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Virginia Wage Floor</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{SITE_URL}}">
+<meta name="theme-color" content="#1d3a7a">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Virginia Wage Floor">
+<meta property="og:title" content="{{OG_TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:url" content="{{SITE_URL}}">
+<meta property="og:image" content="{{SITE_URL}}media/og.png?v={{VERSION}}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{OG_ALT}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{OG_TITLE}}">
+<meta name="twitter:description" content="{{DESCRIPTION}}">
+<meta name="twitter:image" content="{{SITE_URL}}media/og.png?v={{VERSION}}">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="media/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;700&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>{{CSS}}</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="./"><span class="brand-mark">VA</span><span class="brand-text">Wage Floor</span></a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#tracker">Tracker</a>
+      <a href="#how">2029 rule</a>
+      <a href="#forecast">Forecast</a>
+      <a href="#table">By year</a>
+      <a href="media.html">Media kit</a>
+    </nav>
+    <button class="btn" type="button" id="shareBtn" aria-label="Share this page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/></svg><span class="btn-label">Share</span>
+    </button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="mast">
+    <h1>Virginia Wage Floor</h1>
+    <span class="cite">Va. Code § 40.1-28.10 · as amended 2026 (HB 1 / SB 1)</span>
+  </div>
+  <div class="now">
+    <div class="stat law">
+      <span class="eyebrow">In effect today</span>
+      <span class="big num" id="nowWage">{{NOW_WAGE}}</span>
+      <span class="sub" id="nowSub">{{NOW_SUB}}</span>
+    </div>
+    <div class="stat law">
+      <span class="eyebrow">Next increase</span>
+      <span class="big num" id="nextWage">{{NEXT_WAGE}}</span>
+      <span class="sub" id="nextSub">{{NEXT_SUB}}</span>
+    </div>
+    <div class="stat fc">
+      <span class="eyebrow">First indexed rate ({{FIRST_OPEN}})</span>
+      <span class="big num" id="estFirst">{{EST_FIRST}}</span>
+      <span class="sub">Estimate · set by DOLI by October 1, {{FIRST_OPEN_PREV}}</span>
+    </div>
+    <div class="stat fc">
+      <span class="eyebrow">Projected 2070 rate</span>
+      <span class="big num" id="est2070">{{EST_2070}}</span>
+      <span class="sub" id="est2070sub">Base scenario · {{EST_2070_ANNUAL}} a year full-time</span>
+    </div>
+  </div>
+  <div class="updated">
+    <span>Data updated <b>{{UPDATED_LONG}}</b></span>
+    <span>CPI-U through <b>{{CPI_THROUGH}}</b></span>
+    <span>Inflation outlook: <b>{{SURVEY}}</b></span>
+  </div>
+</header>
+
+<section id="tracker" aria-labelledby="sched">
+  <div class="sec-head">
+    <span class="eyebrow">Tracker</span>
+    <h2 id="sched">The rate, step by step</h2>
+  </div>
+  <div class="steps" id="steps">{{STEPS_HTML}}</div>
+  <span class="scroll-hint">Swipe for more steps →</span>
+  <p class="lede">Virginia law requires employers to pay the greater of the state rate or the federal minimum ($7.25 since 2009). The 2026 legislation, signed in April 2026, fixed the 2027 and 2028 steps in statute. Annual inflation indexing starts in 2029.</p>
+</section>
+
+<section id="how" aria-labelledby="howh">
+  <div class="sec-head">
+    <span class="eyebrow">The 2029 mechanism</span>
+    <h2 id="howh">How Virginia will set the 2029 wage</h2>
+  </div>
+  <div class="statute">
+    <div style="display:grid;gap:18px;min-width:0">
+      <blockquote>
+        <span class="sec">§ 40.1-28.10(F), summarized with key phrases quoted</span>
+        <span>“By October 1, 2028, and annually thereafter, the Commissioner shall establish the adjusted state hourly minimum wage” for the 12 months starting the following January 1.</span>
+        <span>The new rate is the current rate plus the percentage by which the U.S. city average CPI-U “has increased during the most recent calendar year for which such information is available.” Each adjustment cannot be less than zero.</span>
+      </blockquote>
+      <div class="formula">Wage<sub>2029</sub> = $15.00 × (1 + CPI-U change, Dec 2026 → Dec 2027)<br>Today’s estimate: $15.00 × (1 + {{FIRST_CPI_PCT}}) = <strong>{{EST_FIRST}}</strong></div>
+      <ul class="notes">
+        <li><strong>Who sets it:</strong> the Commissioner of Labor and Industry (Virginia DOLI) calculates and publishes the rate. The General Assembly does not vote on it.</li>
+        <li><strong>Which index:</strong> national CPI-U (U.S. city average, all items) from the Bureau of Labor Statistics. Not a Virginia or regional index.</li>
+        <li><strong>Which change:</strong> DOLI has applied “increased during the most recent calendar year” as the December-to-December change. It used 3.4% for 2023 and 2.9% for 2024. This forecast does the same.</li>
+        <li><strong>Never lower:</strong> if prices fall, the adjustment is zero and the rate holds.</li>
+        <li><strong>Rounding:</strong> the statute is silent. DOLI rounds to the nearest cent ($12.41 × 1.029 = $12.77), and so does this forecast, every year.</li>
+        <li><strong>Two-year lag:</strong> the rate is set by October 1, so the latest full year of data is the year before. The 2029 rate reflects 2027 prices, 2030 reflects 2028, and so on.</li>
+      </ul>
+    </div>
+    <div style="display:grid;gap:14px;align-content:start;min-width:0">
+      <h3>Calendar to the first indexed rate</h3>
+      <ol class="timeline">
+        <li><span class="when">Jan 1, 2027</span><span class="what">Statutory step to <strong>$13.75</strong>.</span></li>
+        <li><span class="when">Jan–Dec 2027</span><span class="what">The price year that drives the 2029 increase.</span></li>
+        <li><span class="when">Jan 1, 2028</span><span class="what">Statutory step to <strong>$15.00</strong>, the base for indexing.</span></li>
+        <li><span class="when">Mid-Jan 2028</span><span class="what">BLS publishes December 2027 CPI. From then on the 2029 rate can be calculated exactly.</span></li>
+        <li><span class="when">By Oct 1, 2028</span><span class="what">DOLI announces the 2029 rate. In 2025 it announced in late July.</span></li>
+        <li><span class="when">Jan 1, 2029</span><span class="what">The first inflation-adjusted rate takes effect. The cycle repeats every year.</span></li>
+      </ol>
+      <p class="lede" style="font-size:0.93rem">{{NOWCAST_TEXT}}</p>
+    </div>
+  </div>
+</section>
+
+<section id="forecast" aria-labelledby="fch">
+  <div class="sec-head">
+    <span class="eyebrow">Forecast · {{FIRST_OPEN}}–2070</span>
+    <h2 id="fch">Forty-four years of the Virginia minimum wage</h2>
+    <p class="lede">From {{FIRST_OPEN}} the rate depends only on inflation. Pick a scenario or set your own CPI assumptions. Rates fixed by law do not change.</p>
+  </div>
+  <div class="tool">
+    <div class="controls">
+      <div class="field">
+        <label id="scenLabel">Scenario</label>
+        <div class="seg" role="group" aria-labelledby="scenLabel" id="scen">
+          <button type="button" data-s="low" aria-pressed="false">Low</button>
+          <button type="button" data-s="base" aria-pressed="true">Base</button>
+          <button type="button" data-s="high" aria-pressed="false">High</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="near" id="nearLabel">{{FIRST_CPI_YEAR}} CPI-U change (sets the {{FIRST_OPEN}} rate)</label>
+        <div class="row"><input type="range" id="near" min="0" max="6" step="0.1" value="2.3"><output id="nearOut" for="near">2.3%</output></div>
+      </div>
+      <div class="field">
+        <label for="lr">Annual CPI-U after that</label>
+        <div class="row"><input type="range" id="lr" min="0" max="6" step="0.1" value="2.3"><output id="lrOut" for="lr">2.3%</output></div>
+      </div>
+    </div>
+    <div class="chart-box" id="chartBox">
+      <svg id="chart" viewBox="0 0 960 400" role="img" aria-label="Line chart of the Virginia minimum wage from 2009 through 2070, with law in blue and forecast in amber"></svg>
+      <div class="tip" id="tip" hidden></div>
+    </div>
+    <div class="legend">
+      <span><i class="sw law"></i>Set by law or DOLI</span>
+      <span><i class="sw fc"></i>Forecast</span>
+      <span><i class="sw band"></i>Low to High scenario range</span>
+    </div>
+    <div class="milestones" id="milestones"></div>
+  </div>
+</section>
+
+<section id="table" aria-labelledby="tblh">
+  <div class="sec-head">
+    <span class="eyebrow">Year by year</span>
+    <h2 id="tblh">Full schedule, 2026–2070</h2>
+    <p class="lede">Values follow the scenario selected above. “Today’s dollars” deflates by the same CPI path, which shows that indexing keeps buying power roughly flat after 2028.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Jan 1</th><th>Basis</th><th>Hourly</th><th>Change</th><th class="opt">CPI year used</th><th>Per year<span class="opt"> (full-time)</span></th><th class="opt">Today’s dollars</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="mediah">
+  <div class="promo">
+    <div>
+      <span class="eyebrow">Media kit</span>
+      <h2 id="mediah" style="margin-top:6px">Share the numbers</h2>
+      <p class="lede" style="margin-top:8px">Ready-made images for posts and stories: today’s rate, the next increase, the {{FIRST_OPEN}} estimate and the full year-by-year list. They regenerate whenever the data changes and always use the base estimate.</p>
+      <div class="cta"><a class="btn" href="media.html">Open media kit</a><a class="btn ghost" href="data/forecast.csv">Download CSV</a></div>
+    </div>
+    <img src="media/current-post.png?v={{VERSION}}" alt="Social post image showing Virginia's current minimum wage of {{NOW_WAGE}}" width="1080" height="1350" loading="lazy">
+  </div>
+</section>
+
+<section id="method" aria-labelledby="meth">
+  <div class="sec-head">
+    <span class="eyebrow">Method and sources</span>
+    <h2 id="meth">How the forecast is built and kept current</h2>
+  </div>
+  <ul class="notes ink">
+    <li><strong>Recurrence:</strong> Rate<sub>y</sub> = round(Rate<sub>y−1</sub> × (1 + max(0, CPI<sub>y−2</sub>)), cents) for every year not yet set by law or by DOLI.</li>
+    <li><strong>CPI data:</strong> once both Decembers are published, the actual change is used and the year is marked “Calculated”. For a year in progress, the seasonally adjusted index so far is extended to December at the assumed rate.</li>
+    <li><strong>Base:</strong> {{BASE_TEXT}}</li>
+    <li><strong>Low and High:</strong> the base near-term outlook minus 0.5 or plus 0.7 points, then 2.0% (about the Fed’s target) or 3.0% a year over the long run.</li>
+    <li><strong>Automatic updates:</strong> a scheduled GitHub Action pulls new CPI data each month after the BLS release. Each week (daily during the legislative session) it checks the Code of Virginia, General Assembly bills and DOLI announcements. Changes to law or assumptions come in as reviewed pull requests.</li>
+    <li><strong>Not modeled:</strong> future legislation, a higher federal minimum, tipped wages, and training or youth exemptions. Projections decades out depend entirely on the inflation assumption.</li>
+  </ul>
+  <ol class="sources">
+    <li><a href="https://law.lis.virginia.gov/vacode/title40.1/chapter3/section40.1-28.10/" target="_blank" rel="noopener">Code of Virginia § 40.1-28.10</a> (Virginia LIS)</li>
+    <li><a href="https://lis.virginia.gov/bill-details/20261/HB1" target="_blank" rel="noopener">HB 1, 2026 Session, Chapter 350</a> (Virginia LIS)</li>
+    <li><a href="https://www.governor.virginia.gov/newsroom/news-releases/2026/april-releases/name-1116004-en.html" target="_blank" rel="noopener">Governor Spanberger signs bills to raise state minimum wage</a> (Office of the Governor)</li>
+    <li><a href="https://doli.virginia.gov/2025/07/29/virginia-minimum-wage-rate-increasing-effective-january-1-2026/" target="_blank" rel="noopener">Virginia minimum wage rate increasing effective January 1, 2026</a> (DOLI)</li>
+    <li><a href="https://data.bls.gov/timeseries/CUUR0000SA0" target="_blank" rel="noopener">CPI-U, U.S. city average, all items</a> (BLS)</li>
+    <li><a href="{{SURVEY_URL}}" target="_blank" rel="noopener">Survey of Professional Forecasters, {{SURVEY}}</a> (Philadelphia Fed)</li>
+  </ol>
+</section>
+
+<footer class="foot">
+  <span>Built {{UPDATED_LONG}}. Machine-readable data: <a href="data/forecast.json">forecast.json</a> · <a href="data/forecast.csv">forecast.csv</a> · <a href="{{REPO_URL}}">source on GitHub</a></span>
+  <span>An independent estimate for information only. It is not legal advice and not an official DOLI figure.</span>
+</footer>
+
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>window.SITE = {{DATA_JSON}};</script>
+<script>{{ENGINE}}</script>
+<script>{{PAGE_JS}}</script>
+</body>
+</html>
